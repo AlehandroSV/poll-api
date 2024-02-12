@@ -3,6 +3,7 @@ import fastifyCors from "@fastify/cors";
 
 import env from "./utils/env";
 import { CreatePoll } from "./routes/Poll/createPoll";
+import { GetPoll } from "./routes/Poll/getPoll";
 
 const app = fastify();
 
@@ -11,6 +12,7 @@ app.register(fastifyCors, {
 });
 
 app.register(CreatePoll);
+app.register(GetPoll);
 
 app.listen({ port: env.port }, (err, address) => {
   if (err) {
