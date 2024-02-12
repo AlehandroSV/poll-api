@@ -7,16 +7,16 @@ import { CreatePollBodySchema } from "../../validators/Poll/CreatePoll";
 export async function CreatePoll(app: FastifyInstance) {
   app.post("/poll", async (req, res) => {
     try {
-      const validatedBody = await CreatePollBodySchema.validate(req.body, {
+      const { title, options } = await CreatePollBodySchema.validate(req.body, {
         abortEarly: false,
       });
 
       const data = await prisma.poll.create({
         data: {
-          title: validatedBody.title,
+          title,
           options: {
             createMany: {
-              data: validatedBody.options.map((option) => {
+              data: options.map((option) => {
                 return {
                   title: option,
                 };

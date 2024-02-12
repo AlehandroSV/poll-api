@@ -7,13 +7,13 @@ import { GetPollParamsSchema } from "../../validators/Poll/GetPoll";
 export async function GetPoll(app: FastifyInstance) {
   app.get("/poll/:pollId", async (req, res) => {
     try {
-      const validatedParams = await GetPollParamsSchema.validate(req.params, {
+      const { pollId } = await GetPollParamsSchema.validate(req.params, {
         abortEarly: false,
       });
 
       const data = await prisma.poll.findMany({
         where: {
-          id: validatedParams.pollId,
+          id: pollId,
         },
         include: {
           options: {
