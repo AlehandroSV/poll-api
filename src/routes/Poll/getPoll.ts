@@ -2,12 +2,12 @@ import { FastifyInstance } from "fastify";
 import { ValidationError } from "yup";
 
 import { prisma } from "../../utils/prisma";
-import { GetPollSchema } from "../../validators/Poll/GetPoll";
+import { GetPollParamsSchema } from "../../validators/Poll/GetPoll";
 
 export async function GetPoll(app: FastifyInstance) {
   app.get("/poll/:pollId", async (req, res) => {
     try {
-      const validatedParams = await GetPollSchema.validate(req.params, {
+      const validatedParams = await GetPollParamsSchema.validate(req.params, {
         abortEarly: false,
       });
 

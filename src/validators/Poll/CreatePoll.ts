@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-export const CreatePollSchema = yup.object().shape({
+export const CreatePollBodySchema = yup.object().shape({
   title: yup
     .string()
     .typeError('O campo "title" deve ser uma string.')

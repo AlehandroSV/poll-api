@@ -2,12 +2,12 @@ import { FastifyInstance } from "fastify";
 import { ValidationError } from "yup";
 
 import { prisma } from "../../utils/prisma";
-import { CreatePollSchema } from "../../validators/Poll/CreatePoll";
+import { CreatePollBodySchema } from "../../validators/Poll/CreatePoll";
 
 export async function CreatePoll(app: FastifyInstance) {
   app.post("/poll", async (req, res) => {
     try {
-      const validatedBody = await CreatePollSchema.validate(req.body, {
+      const validatedBody = await CreatePollBodySchema.validate(req.body, {
         abortEarly: false,
       });
 
