@@ -1,19 +1,23 @@
 import { fastify } from "fastify";
-import fastifyCors from "@fastify/cors";
-import fastifyCookie from "@fastify/cookie";
+import cors from "@fastify/cors";
+import cookies from "@fastify/cookie";
+import webSocket from "@fastify/websocket";
 
 import env from "./utils/env";
 import { CreatePoll } from "./routes/Poll/createPoll";
 import { GetPoll } from "./routes/Poll/getPoll";
 import { VoteOnPoll } from "./routes/Poll/voteOnPoll";
+import { PollResult } from "./ws/Poll/pollResult";
 
 const app = fastify();
 
-app.register(fastifyCors, {
+app.register(webSocket);
+
+app.register(cors, {
   origin: "*",
 });
 
-app.register(fastifyCookie, {
+app.register(cookies, {
   secret: env.secretCookie,
   hook: "onRequest",
   parseOptions: {},
@@ -22,6 +26,7 @@ app.register(fastifyCookie, {
 app.register(CreatePoll);
 app.register(GetPoll);
 app.register(VoteOnPoll);
+app.register(PollResult);
 
 app.listen({ port: env.port }, (err, address) => {
   if (err) {

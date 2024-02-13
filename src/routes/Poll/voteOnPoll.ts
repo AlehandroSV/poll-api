@@ -8,6 +8,7 @@ import {
   VotePollParamsSchema,
 } from "../../validators/Poll/VotePoll";
 import { redis } from "../../utils/redis";
+import { voting } from "../../utils/votingPubSub";
 
 export async function VoteOnPoll(app: FastifyInstance) {
   app.post("/poll/:pollId/votes", async (req, res) => {
@@ -42,7 +43,16 @@ export async function VoteOnPoll(app: FastifyInstance) {
             },
           });
 
-          await redis.zincrby(pollId, -1, userPreviousVoteOnPoll.pollOptionId);
+          const votes = await redis.zincrby(
+            pollId,
+            -1,
+            userPreviousVoteOnPoll.pollOptionId
+          );
+
+          voting.publish(pollId, {
+            pollOptionId: userPreviousVoteOnPoll.pollOptionId,
+            votes: Number(votes),
+          });
         } else if (userPreviousVoteOnPoll) {
           return res.status(400).send({
             status: "error",
@@ -70,7 +80,12 @@ export async function VoteOnPoll(app: FastifyInstance) {
         },
       });
 
-      await redis.zincrby(pollId, 1, pollOptionId);
+      const votes = await redis.zincrby(pollId, 1, pollOptionId);
+
+      voting.publish(pollId, {
+        pollOptionId,
+        votes: Number(votes),
+      });
 
       res.status(201).send(data);
     } catch (error) {
