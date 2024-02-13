@@ -7,6 +7,7 @@ import {
   VotePollBodySchema,
   VotePollParamsSchema,
 } from "../../validators/Poll/VotePoll";
+import { redis } from "../../utils/redis";
 
 export async function VoteOnPoll(app: FastifyInstance) {
   app.post("/poll/:pollId/votes", async (req, res) => {
@@ -33,13 +34,15 @@ export async function VoteOnPoll(app: FastifyInstance) {
 
         if (
           userPreviousVoteOnPoll &&
-          userPreviousVoteOnPoll?.pollOptionId !== pollOptionId
+          userPreviousVoteOnPoll.pollOptionId !== pollOptionId
         ) {
           await prisma.vote.delete({
             where: {
               id: userPreviousVoteOnPoll.id,
             },
           });
+
+          await redis.zincrby(pollId, -1, userPreviousVoteOnPoll.pollOptionId);
         } else if (userPreviousVoteOnPoll) {
           return res.status(400).send({
             status: "error",
@@ -66,6 +69,8 @@ export async function VoteOnPoll(app: FastifyInstance) {
           pollOptionId,
         },
       });
+
+      await redis.zincrby(pollId, 1, pollOptionId);
 
       res.status(201).send(data);
     } catch (error) {
