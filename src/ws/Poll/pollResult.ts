@@ -3,8 +3,6 @@ import { GetPollParamsSchema } from "../../validators/Poll/GetPoll";
 import { voting } from "../../utils/votingPubSub";
 
 export async function PollResult(app: FastifyInstance) {
-  console.log("a");
-
   app.get(
     "/poll/:pollId/result",
     { websocket: true },
